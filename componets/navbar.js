@@ -3,7 +3,6 @@ import {StyleSheet,View, Text, TouchableOpacity} from "react-native";
 
 class Navbar extends React.Component {
     render() {
-        console.log(this.props);
         return (
             <View style={styles.upperView}>
                 <TouchableOpacity style={styles.upperButton} onPress={()=>{this.props.navigation.openDrawer();}}><Text>Menu!</Text></TouchableOpacity>

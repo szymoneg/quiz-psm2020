@@ -1,32 +1,64 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
-import {Table, TableWrapper, Row, Rows, Col, Cols, Cell} from 'react-native-table-component';
+import {StyleSheet, View, FlatList, RefreshControl,SafeAreaView} from 'react-native';
+import {Table, Row} from 'react-native-table-component';
 import Navbar from "../componets/navbar";
+
+result = [
+    {
+        "nick": "Marek",
+        "score": 18,
+        "total": 20,
+        "type": "historia",
+        "date": "2018-11-22"
+    },
+    {
+        "nick": "Marek",
+        "score": 19,
+        "total": 20,
+        "type": "historia",
+        "date": "2018-11-22"
+    }
+]
+
+const wait = (timeout) => {
+    return new Promise(resolve => {
+        setTimeout(resolve, timeout);
+    });
+}
 
 
 class ResultScreen extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            HeadTable: ['Nick', 'Points', 'Type', 'Date'],
-            DataTable: [
-                ['nick', '18/20', 'test1', '12-03-2007'],
-                ['nick', '18/20', 'test1', '12-03-2007'],
-                ['nick', '18/20', 'test1', '12-03-2007'],
-                ['nick', '18/20', 'test1', '12-03-2007'],
-            ],
-        }
+    state = {
+        refreshing: false,
+        setRefreshing: false,
+    }
+
+    onRefresh = (() => {
+        this.setState({setRefreshing: true})
+        wait(2000).then(() => this.setState({setRefreshing: false}));
+    });
+
+    Item = ({item}) => {
+        return <Row data={[item.nick, item.score + '/' + item.total, item.type, item.date]}/>
     }
 
     render() {
-        const state = this.state;
         return (
             <View style={styles.container}>
                 <Navbar navigation={this.props.navigation} title="Home"/>
                 <View style={styles.body}>
-                    <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
-                        <Row data={state.HeadTable} style={styles.head} textStyle={styles.text}/>
-                        <Rows data={state.DataTable} textStyle={styles.text}/>
+                    <Table>
+                        <Row data={['nick', 'point', 'type', 'date']} style={styles.head} textStyle={styles.text}/>
+                        <SafeAreaView>
+                            <FlatList data={result}
+                                      renderItem={this.Item}
+                                      keyExtractor={(item, index) => index.toString()}
+                                      refreshControl={<RefreshControl colors={["#9Bd35A", "#689F38"]}
+                                                                      refreshing={this.state.refreshing}
+                                                                      onRefresh={this.onRefresh}
+                                      />}
+                            />
+                        </SafeAreaView>
                     </Table>
                 </View>
             </View>
@@ -35,8 +67,8 @@ class ResultScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-    container:{flex: 1},
-    body: { padding: 16, paddingTop: 30, backgroundColor: '#fff'},
+    container: {flex: 1},
+    body: {padding: 16, paddingTop: 30, backgroundColor: '#fff'},
     head: {height: 40, backgroundColor: '#f1f8ff'},
     text: {margin: 6}
 });

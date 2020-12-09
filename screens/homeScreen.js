@@ -11,8 +11,9 @@ class HomeScreen extends React.Component {
                 <Navbar navigation={this.props.navigation} title="Home"/>
                 <SafeAreaView style={styles.safe}>
                     <ScrollView style={styles.scrollVi}>
-                        <QuestionComponent title="Title test #1" tags="#12"/>
-                        <QuestionComponent title="Title test #2" tags="#4545"/>
+                        <QuestionComponent onPress={() => navigation.navigate('Test',{title: "Test wiedzy o papieszu",testNumber:1})}
+                                           title="Test wiedzy o papieszu" tags="#123"/>
+                        {/*<QuestionComponent title="Test wiedzy o pilce" tags="#4545" testNumber={2}/>*/}
                     </ScrollView>
                     <View style={styles.result}>
                         <Text style={styles.textResult}>Get to know your ranking result!</Text>

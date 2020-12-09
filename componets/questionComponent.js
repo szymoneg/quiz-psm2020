@@ -4,7 +4,7 @@ import {StyleSheet,View, Text, TouchableOpacity} from "react-native";
 export default class questionComponent extends React.Component {
     render(props) {
         return (
-            <TouchableOpacity style={styles.container}>
+            <TouchableOpacity style={styles.container} onPress={this.props.onPress}>
                 <Text style={styles.title}>{this.props.title}</Text>
                 <Text style={styles.tags}>{this.props.tags}</Text>
                 <Text numberOfLines={2} style={styles.text}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus diam felis, dapibus vel purus id, iaculis euismod mi.
