@@ -7,9 +7,7 @@ export default class questionComponent extends React.Component {
             <TouchableOpacity style={styles.container} onPress={this.props.onPress}>
                 <Text style={styles.title}>{this.props.title}</Text>
                 <Text style={styles.tags}>{this.props.tags}</Text>
-                <Text numberOfLines={2} style={styles.text}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus diam felis, dapibus vel purus id, iaculis euismod mi.
-                    Duis nunc velit, elementum sed fermentum vitae, dignissim non urna. Integer quis odio
-                    elementum lacus viverra fringilla. Morbi in feugiat sem. Integer convallis commodo est. Donec sagittis luctus mattis. </Text>
+                <Text numberOfLines={2} style={styles.text}>{this.props.description}</Text>
             </TouchableOpacity>
         );
     }
@@ -28,18 +26,21 @@ const styles = StyleSheet.create({
         fontSize: 18,
         paddingTop: 5,
         paddingLeft: 15,
+        fontFamily: 'XDDD'
     },
     tags:{
         fontSize: 14,
         paddingTop: 5,
         paddingLeft: 15,
+        fontFamily: 'XDDD'
     },
     text:{
         fontSize: 14,
         paddingTop: 5,
         paddingLeft: 15,
         paddingBottom: 5,
-        paddingRight: 15
+        paddingRight: 15,
+        fontFamily: 'XDDD'
     }
 
 })
