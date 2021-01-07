@@ -3,6 +3,8 @@ import {StyleSheet, Text, View, SafeAreaView, ScrollView,TouchableOpacity} from 
 import QuestionComponent from '../componets/questionComponent'
 import Navbar from "../componets/navbar";
 
+const _ = require("lodash");
+
 class HomeScreen extends React.Component {
     state = {
         tests:[],
@@ -15,7 +17,7 @@ class HomeScreen extends React.Component {
             .then((json) => {
                 this.setState({
                     ...this.state,
-                    tests: json,
+                    tests: _.shuffle(json),
                     isLoading: false
                 });
             })

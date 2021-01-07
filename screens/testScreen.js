@@ -13,6 +13,8 @@ import {
 import Navbar from "../componets/navbar";
 import {CountdownCircleTimer} from "react-native-countdown-circle-timer";
 
+const _ = require("lodash");
+
 let task = [
     {
         "question": "Rekin w języku angielski?",
@@ -85,7 +87,7 @@ let task = [
 
 class TestScreen extends React.Component {
     state = {
-        tags: this.props.route.params.tags,
+        tags: '',
         nick: '',
         test: {answers: []},
         testIndex: -1,
@@ -95,7 +97,7 @@ class TestScreen extends React.Component {
         completed: false,
         testNumber: this.props.route.params.testNumber,
         modalVisible: true,
-        setModalVisible: false
+        setModalVisible: false,
     }
 
     componentDidMount() {
@@ -112,13 +114,19 @@ class TestScreen extends React.Component {
 
     getSpecificTest = () => {
         const {id} = this.props.route.params;
+        const {answers} = this.state.test;
         fetch(`http://tgryl.pl/quiz/test/${id}`)
             .then((response) => response.json())
             .then((json) => {
                 task = json.tasks;
+                let tagi = []
+                json.tags.map(data => {
+                    tagi.push(data)
+                })
                 this.setState({
                     ...this.state,
-                    isLoading: false
+                    isLoading: false,
+                    tags: tagi,
                 });
             })
             .then(() => this.loadTest())
@@ -220,7 +228,8 @@ class TestScreen extends React.Component {
                     <Text style={styles.firstText}>{this.state.test.question}</Text>
                 </View>
                 <View style={styles.bottomAnswer}>
-                    {this.state.test.answers.map((val, index) => {
+                    {
+                        this.state.test.answers.map((val, index) => {
                         return (
                             <TouchableOpacity key={index} onPress={() => this.markAnswer(index)} style={styles.answer}>
                                 <Text style={styles.answerText}>{val.content}</Text>

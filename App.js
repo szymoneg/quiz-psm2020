@@ -1,15 +1,16 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {createDrawerNavigator } from '@react-navigation/drawer';
+import {createDrawerNavigator, DrawerItem} from '@react-navigation/drawer';
 import ResultScreen from "./screens/resultScreen";
 import HomeScreen from "./screens/homeScreen";
 import TestScreen from "./screens/testScreen";
 import {Modal,Text, View, TouchableOpacity,StyleSheet,StatusBar,ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Font from 'expo-font';
-import flattenArray from "react-native-web/dist/modules/flattenArray";
+import CustomDrawerContent from "./componets/customDrawerNavigator";
 
 const Drawer = createDrawerNavigator();
+const _ = require("lodash");
 
 
 const storeData = async () => {
@@ -36,11 +37,32 @@ export default class App extends React.Component {
         modalVisible: true,
         assetsLoaded: false,
         isLoading: false,
-        tests:[]
-
+        id:[],
     }
 
+    getQuizList = () => {
+        fetch('http://tgryl.pl/quiz/tests')
+            .then((response) => response.json())
+            .then((json) => {
+                let temp = []
+                json.map(data=>{
+                    temp.push(data.id);
+                })
+                temp = _.shuffle(temp)
+                this.setState({
+                    ...this.state,
+                    id: temp
+                },()=>{
+                    //console.log(this.state.id[1].toString())
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
     componentDidMount() {
+        this.getQuizList();
         retrieveData()
             .then(data => data !== 'XD')
             .then(data => this.setState({modalVisible: data}));
@@ -76,7 +98,7 @@ export default class App extends React.Component {
                             </TouchableOpacity>
                         </View>
                     </Modal>
-                    <Drawer.Navigator initialRouteName="Home">
+                    <Drawer.Navigator drawerContent={(props) => <CustomDrawerContent {...props} />}>
                         <Drawer.Screen name="Home" component={HomeScreen}/>
                         <Drawer.Screen name="Details" component={ResultScreen} options={{unmountOnBlur: true}}/>
                         <Drawer.Screen name="Test" component={TestScreen} options={{unmountOnBlur: true}}/>
