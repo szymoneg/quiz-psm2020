@@ -1,9 +1,6 @@
 import React from "react";
-import {
-    DrawerContentScrollView, DrawerItem,
-    DrawerItemList,
-} from '@react-navigation/drawer';
-import {Text, View, Button} from "react-native";
+import {Image, View, Button, StyleSheet} from "react-native";
+import {getData, saveData} from "../async/AsyncStorage";
 
 const _ = require("lodash");
 
@@ -28,10 +25,19 @@ export default class CustomDrawerContent extends React.Component {
                 }, () => {
                     console.log(this.state.id[1].toString())
                 });
-            })
+            }).then(quiz => saveData("db", JSON.stringify(quiz)))
             .catch((error) => {
                 console.error(error);
             });
+
+        getData("db")
+            .then(data => JSON.parse(data))
+            .then(quiz => {
+                this.setState({
+                    ...this.state,
+                    tests: _.shuffle(quiz)
+                })
+            })
     };
 
 
@@ -56,7 +62,7 @@ export default class CustomDrawerContent extends React.Component {
     render() {
         return (
             <View>
-                {console.log(this.state.id[1])}
+                <Image source={require('../assets/iconQuiz.png')} style={styles.image}/>
                 <Button title={"Home"} onPress={() => this.props.navigation.navigate("Home")}/>
                 <Button title={"Stats"} onPress={() => this.props.navigation.navigate("Details")}/>
                 <Button title={"Random"}
@@ -66,5 +72,15 @@ export default class CustomDrawerContent extends React.Component {
         );
     }
 }
+
+const styles = StyleSheet.create({
+
+    image:{
+        width:120,
+        height: 120,
+        alignSelf: 'center',
+        marginVertical: 10
+    }
+})
 
 

@@ -1,33 +1,36 @@
 import React from 'react';
-import {StyleSheet, Text, View, SafeAreaView, ScrollView,TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity} from 'react-native';
 import QuestionComponent from '../componets/questionComponent'
 import Navbar from "../componets/navbar";
+import {getData, saveData} from "../async/AsyncStorage";
+import NetInfo from '@react-native-community/netinfo';
+
+
+
 
 const _ = require("lodash");
 
 class HomeScreen extends React.Component {
     state = {
-        tests:[],
-        isLoading: true
+        tests: [],
+        isLoading: true,
+        conn: true
     }
 
-    getQuizList = () => {
-        fetch('http://tgryl.pl/quiz/tests')
-            .then((response) => response.json())
-            .then((json) => {
-                this.setState({
-                    ...this.state,
-                    tests: _.shuffle(json),
-                    isLoading: false
-                });
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    };
 
     componentDidMount() {
-        this.getQuizList();
+        NetInfo.addEventListener(state => {
+            this.setState({conn: state.isConnected})
+        });
+        getData("db")
+            .then(data => JSON.parse(data))
+            .then(quiz => {
+                this.setState({
+                    ...this.state,
+                    tests: _.shuffle(quiz),
+                    isLoading: false
+                })
+            })
     }
 
     render() {
@@ -36,10 +39,16 @@ class HomeScreen extends React.Component {
             <View style={styles.container}>
                 <Navbar navigation={this.props.navigation} title="Home"/>
                 {this.state.isLoading ? <Text>Loading...</Text> : (<SafeAreaView style={styles.safe}>
+                    {this.state.conn ? <Text></Text> : <Text style={styles.blad}>Brak polaczenia z internetem</Text>}
                     <ScrollView style={styles.scrollVi}>
                         {this.state.tests.map((item, key) => {
-                            return (<QuestionComponent key={key} onPress={() => navigation.navigate('Test',{title: item.name, id: item.id,tags:item.tags})}
-                                               title={item.name} tags={item.tags} description={item.description}/>)
+                            return (<QuestionComponent key={key} onPress={() => navigation.navigate('Test', {
+                                title: item.name,
+                                id: item.id,
+                                tags: item.tags
+                            })}
+                                                       title={item.name} tags={item.tags}
+                                                       description={item.description}/>)
                         })}
                         {/*<QuestionComponent title="Test wiedzy o pilce" tags="#4545" testNumber={2}/>*/}
                     </ScrollView>
@@ -55,9 +64,13 @@ class HomeScreen extends React.Component {
     }
 }
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    blad: {
+      backgroundColor: "red",
     },
     safe: {
         flex: 6,
@@ -81,22 +94,22 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         marginVertical: 10,
     },
-    upperView:{
+    upperView: {
         backgroundColor: 'red',
         paddingVertical: 10,
         paddingHorizontal: 20,
         flexDirection: 'row',
-        justifyContent:'center',
+        justifyContent: 'center',
     },
-    upperText:{
+    upperText: {
         fontSize: 25,
         marginTop: 15,
         flexGrow: 1,
         textAlign: 'center'
     },
-    upperButton:{
-        backgroundColor:'lightgrey',
-        fontSize:24,
+    upperButton: {
+        backgroundColor: 'lightgrey',
+        fontSize: 24,
         marginTop: 15,
         paddingHorizontal: 10,
         paddingVertical: 10,

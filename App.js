@@ -4,10 +4,11 @@ import {createDrawerNavigator, DrawerItem} from '@react-navigation/drawer';
 import ResultScreen from "./screens/resultScreen";
 import HomeScreen from "./screens/homeScreen";
 import TestScreen from "./screens/testScreen";
-import {Modal,Text, View, TouchableOpacity,StyleSheet,StatusBar,ActivityIndicator } from "react-native";
+import {Modal, Text, View, TouchableOpacity, StyleSheet, StatusBar, ActivityIndicator} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Font from 'expo-font';
 import CustomDrawerContent from "./componets/customDrawerNavigator";
+import {saveData} from "./async/AsyncStorage";
 
 const Drawer = createDrawerNavigator();
 const _ = require("lodash");
@@ -15,8 +16,8 @@ const _ = require("lodash");
 
 const storeData = async () => {
     try {
-        await AsyncStorage.setItem('@MySuperStore:key','I like to save it.');
-    }catch (error){
+        await AsyncStorage.setItem('@MySuperStore:key', 'I like to save it.');
+    } catch (error) {
 
     }
 }
@@ -24,10 +25,10 @@ const storeData = async () => {
 const retrieveData = async () => {
     try {
         const value = await AsyncStorage.getItem('@MySuperStore:key');
-        if (value !== null){
+        if (value !== null) {
             return value;
         }
-    }catch (e){
+    } catch (e) {
         return false;
     }
 }
@@ -37,32 +38,35 @@ export default class App extends React.Component {
         modalVisible: true,
         assetsLoaded: false,
         isLoading: false,
-        id:[],
+        id: [],
     }
 
     getQuizList = () => {
         fetch('http://tgryl.pl/quiz/tests')
             .then((response) => response.json())
             .then((json) => {
+                saveData("db",json)
                 let temp = []
-                json.map(data=>{
+                json.map(data => {
                     temp.push(data.id);
                 })
                 temp = _.shuffle(temp)
                 this.setState({
                     ...this.state,
                     id: temp
-                },()=>{
-                    //console.log(this.state.id[1].toString())
                 });
-            })
-            .catch((error) => {
+            }).catch((error) => {
                 console.error(error);
             });
     };
 
     componentDidMount() {
         this.getQuizList();
+
+        fetch(`http://tgryl.pl/quiz/tests`)
+            .then(res => res.json())
+            .then(quizList => saveData("db", JSON.stringify(quizList)));
+
         retrieveData()
             .then(data => data !== 'XD')
             .then(data => this.setState({modalVisible: data}));
@@ -79,7 +83,7 @@ export default class App extends React.Component {
         });
     }
 
-    handleAccept = () =>{
+    handleAccept = () => {
         storeData('XD').then(() => this.setState({modalVisible: false}));
     }
 
@@ -105,11 +109,11 @@ export default class App extends React.Component {
                     </Drawer.Navigator>
                 </NavigationContainer>
             );
-        }else {
+        } else {
             return (
                 <View>
-                    <ActivityIndicator />
-                    <StatusBar barStyle="default" />
+                    <ActivityIndicator/>
+                    <StatusBar barStyle="default"/>
                 </View>
             );
         }
